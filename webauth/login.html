@@ -1,11 +1,27 @@
-<h1>Login</h1>
+<html>
+<head>
+
+</head>
+<body>
+<h1 style="text-align: center; color: darkblue">Login</h1>
 
 {{if .Failure}}
-<p>Login Failed</p>
+<h1 style="text-align: center;color:red;">Login Failed</h1>
 {{end}}
+<div style="width: 100%">
+    <img src="Alliant_energy_logo.jpg" style="display: block;margin: auto; height: 30%">
+</div>
+<form action="/login/" method="POST" style="width:100%;margin-top: 2em">
+    <div style="width: 50%; margin:auto;text-align: center;padding-bottom: 2em;border: solid black;border-radius: 1em">
+        <label for="username" style="display: block;margin-top:1.5em">Username</label>
+        <input type="text" id="username" style="display: block; margin:auto">
+        <label for="password" style="display: block;">Password</label>
+        <input type="text" id="password" style="display: block;margin:auto;margin-bottom: 1em">
+        <button style="margin: auto; min-height: 2em; min-width:4em">Login</button>
+    </div>
 
-<form action="/login/" method="POST">
-<div>Username: <textarea name="uname" rows="1" cols="20"></textarea></div>
-<div>Password: <textarea name="passwd" rows="1" cols="20"></textarea></div>
-<div><input type="submit" value="Login"></div>
+
+
 </form>
+</body>
+</html>
