@@ -1,0 +1,11 @@
+<h1>Login</h1>
+
+{{if .Failure}}
+<p>Login Failed</p>
+{{end}}
+
+<form action="/login/" method="POST">
+<div>Username: <textarea name="uname" rows="1" cols="20"></textarea></div>
+<div>Password: <textarea name="passwd" rows="1" cols="20"></textarea></div>
+<div><input type="submit" value="Login"></div>
+</form>
