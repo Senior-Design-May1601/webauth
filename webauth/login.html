@@ -1,10 +1,25 @@
 <html>
 <head>
-
+    <style>
+        #banner {
+            /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#244e9c+0,f7f7f7+37,f7f7f7+70,efdd02+100 */
+            background: rgb(36,78,156); /* Old browsers */
+            background: -moz-linear-gradient(-45deg, rgba(36,78,156,1) 0%, rgba(247,247,247,1) 37%, rgba(247,247,247,1) 70%, rgba(239,221,2,1) 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,rgba(36,78,156,1)), color-stop(37%,rgba(247,247,247,1)), color-stop(70%,rgba(247,247,247,1)), color-stop(100%,rgba(239,221,2,1))); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(-45deg, rgba(36,78,156,1) 0%,rgba(247,247,247,1) 37%,rgba(247,247,247,1) 70%,rgba(239,221,2,1) 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(-45deg, rgba(36,78,156,1) 0%,rgba(247,247,247,1) 37%,rgba(247,247,247,1) 70%,rgba(239,221,2,1) 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(-45deg, rgba(36,78,156,1) 0%,rgba(247,247,247,1) 37%,rgba(247,247,247,1) 70%,rgba(239,221,2,1) 100%); /* IE10+ */
+            background: linear-gradient(135deg, rgba(36,78,156,1) 0%,rgba(247,247,247,1) 37%,rgba(247,247,247,1) 70%,rgba(239,221,2,1) 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#244e9c', endColorstr='#efdd02',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+            height: 4em;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-<h1 style="text-align: center; color: darkblue">Login</h1>
-
+<div id="banner">
+    <h1 style="text-align: center; color: #244E9C;position: relative;top: 15px">Login</h1>
+</div>
 {{if .Failure}}
 <h1 style="text-align: center;color:red;">Login Failed</h1>
 {{end}}
@@ -17,11 +32,10 @@
         <input type="text" id="username" style="display: block; margin:auto">
         <label for="password" style="display: block;">Password</label>
         <input type="text" id="password" style="display: block;margin:auto;margin-bottom: 1em">
-        <button style="margin: auto; min-height: 2em; min-width:4em">Login</button>
+        <button style="margin: auto; min-height: 2em; min-width:4em;
+        background-color: #EFDD02;border: outset;border-radius: 1em;">Login
+        </button>
     </div>
-
-
-
 </form>
 </body>
 </html>
