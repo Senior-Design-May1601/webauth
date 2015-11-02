@@ -7,9 +7,6 @@ import (
     "net/http"
     "os"
     "time"
-    "fmt"
-    "log"
-    "path/filepath"
 )
 
 type Configuration struct {
@@ -24,11 +21,13 @@ type Info struct {
 }
 
 const (
-    LOGIN_TEMPLATE = "/home/nskinkel/src/may1601/webauth/webauth/templates/login.html"
+    LOGIN_TEMPLATE = "login.html"
+    TEMPLATE_PATH = "templates/"
     LOGIN_URL = "/login/"
 )
 
-var templates = template.Must(template.ParseFiles(LOGIN_TEMPLATE))
+var templates = template.Must(template.ParseFiles(TEMPLATE_PATH +
+                                                  LOGIN_TEMPLATE))
 
 func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
     if r.URL.Path != LOGIN_URL {
@@ -94,12 +93,6 @@ func main() {
 
     http.HandleFunc(LOGIN_URL, loginBaseHandler)
     http.HandleFunc("/", redirectHandler)
-
-    dir, e := filepath.Abs(filepath.Dir(os.Args[0]))
-    if e != nil {
-        log.Fatal(e)
-    }
-    fmt.Println(dir)
 
     go func() {
         err := http.ListenAndServe(":" + config.Http_port, nil)
