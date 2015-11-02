@@ -1,6 +1,6 @@
 {
-    "Certificate": "/home/nskinkel/src/may1601/webauth/tls/dummy_cert.pem",
-    "Key": "/home/nskinkel/src/may1601/webauth/tls/dummy_key.pem",
+    "Certificate": "../tls/dummy_cert.pem",
+    "Key": "../tls/dummy_key.pem",
     "Http_port": "8080",
     "Https_port": "8443"
 }
