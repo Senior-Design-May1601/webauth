@@ -10,6 +10,7 @@ import (
 )
 
 type Configuration struct {
+	Root_dir    string
 	Certificate string
 	Key         string
 	Http_port   string
@@ -21,13 +22,12 @@ type Info struct {
 }
 
 const (
+	TEMPLATE_PATH  = "webauth/templates/"
 	LOGIN_TEMPLATE = "login.html"
-	TEMPLATE_PATH  = "templates/"
 	LOGIN_URL      = "/login/"
 )
 
-var templates = template.Must(template.ParseFiles(TEMPLATE_PATH +
-	LOGIN_TEMPLATE))
+var templates *template.Template
 
 func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != LOGIN_URL {
@@ -94,6 +94,9 @@ func main() {
 	http.HandleFunc(LOGIN_URL, loginBaseHandler)
 	http.HandleFunc("/", redirectHandler)
 
+	templates = template.Must(template.ParseFiles(config.Root_dir + TEMPLATE_PATH +
+		LOGIN_TEMPLATE))
+
 	go func() {
 		err := http.ListenAndServe(":"+config.Http_port, nil)
 		if err != nil {
@@ -102,8 +105,8 @@ func main() {
 	}()
 
 	err := http.ListenAndServeTLS(":"+config.Https_port,
-		config.Certificate,
-		config.Key, nil)
+		config.Root_dir+config.Certificate,
+		config.Root_dir+config.Key, nil)
 	if err != nil {
 		panic("HTTPS server error: " + err.Error())
 	}
