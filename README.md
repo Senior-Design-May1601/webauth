@@ -14,10 +14,12 @@ a POST request (login attempt) is received, the template is rendered with
 an extra "failure" string indicating a failed login.
 
 ### Usage
+
+The ports, TLS certificate, and TLS private key file are specified in
+`webauth_config/json`. `webauth` takes a single argument, the path to the config
+file.
+
 ```
 Usage of ./webauth:
-  -cert="../tls/dummy_cert.pem": path to TLS certificate
-  -http=8080: HTTP server port
-  -https=8443: HTTPS server port
-  -key="../tls/dummy_key.pem": path to TLS private key
+  -config=/path/to/config/file.json
 ```
