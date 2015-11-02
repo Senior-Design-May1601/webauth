@@ -22,7 +22,7 @@ type Info struct {
 }
 
 const (
-	TEMPLATE_PATH  = "webauth/templates/"
+	TEMPLATE_PATH  = "templates/"
 	LOGIN_TEMPLATE = "login.html"
 	LOGIN_URL      = "/login/"
 )
