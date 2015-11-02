@@ -1,21 +1,30 @@
 package main
 
 import (
+    "encoding/json"
     "flag"
     "html/template"
     "net/http"
-    "strconv"
+    "os"
     "time"
+    "fmt"
+    "log"
+    "path/filepath"
 )
+
+type Configuration struct {
+    Certificate string
+    Key string
+    Http_port string
+    Https_port string
+}
 
 type Info struct {
     Failure bool
 }
 
 const (
-    DEFAULT_CERT = "../tls/dummy_cert.pem"
-    DEFAULT_KEY = "../tls/dummy_key.pem"
-    LOGIN_TEMPLATE = "login.html"
+    LOGIN_TEMPLATE = "/home/nskinkel/src/may1601/webauth/webauth/templates/login.html"
     LOGIN_URL = "/login/"
 )
 
@@ -66,27 +75,42 @@ func setHeader(w http.ResponseWriter) {
     w.Header().Set("X-Powered-By", "PHP/5.4.41")
 }
 
-func main() {
-    http_str := flag.Int("http", 8080, "HTTP server port")
-    https_str := flag.Int("https", 8443, "HTTPS server port")
-    cert := flag.String("cert", DEFAULT_CERT, "path to TLS certificate")
-    key := flag.String("key", DEFAULT_KEY, "path to TLS private key")
-    flag.Parse()
+func read_config(path string) Configuration {
+    file, _ := os.Open(path)
+    decoder := json.NewDecoder(file)
+    config := Configuration{}
+    err := decoder.Decode(&config)
+    if err != nil {
+        panic("Configuration error: " + err.Error())
+    }
 
-    http_port := ":" + strconv.Itoa(*http_str)
-    https_port := ":" + strconv.Itoa(*https_str)
+    return config
+}
+
+func main() {
+    config_path := flag.String("config", "", "path to config file")
+    flag.Parse()
+    config := read_config(*config_path)
 
     http.HandleFunc(LOGIN_URL, loginBaseHandler)
     http.HandleFunc("/", redirectHandler)
 
+    dir, e := filepath.Abs(filepath.Dir(os.Args[0]))
+    if e != nil {
+        log.Fatal(e)
+    }
+    fmt.Println(dir)
+
     go func() {
-        err := http.ListenAndServe(http_port, nil)
+        err := http.ListenAndServe(":" + config.Http_port, nil)
         if err != nil {
             panic("HTTP server error: " + err.Error())
         }
     }()
 
-    err := http.ListenAndServeTLS(https_port, *cert, *key, nil)
+    err := http.ListenAndServeTLS(":" + config.Https_port,
+                                  config.Certificate,
+                                  config.Key, nil)
     if err != nil {
         panic("HTTPS server error: " + err.Error())
     }
