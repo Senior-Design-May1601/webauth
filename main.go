@@ -3,23 +3,23 @@ package main
 import (
 	"flag"
 	"html/template"
-    "log"
+	"log"
 	"net/http"
-    "strconv"
-    "strings"
+	"strconv"
+	"strings"
 	"time"
 
-    "github.com/BurntSushi/toml"
-    "github.com/Senior-Design-May1601/projectmain/logger"
+	"github.com/BurntSushi/toml"
+	"github.com/Senior-Design-May1601/projectmain/logger"
 )
 
 type Config struct {
-    Host            string
-	Key             string
-	Cert            string
-	HttpPort        int
-	HttpsPort       int
-    LoginTemplate   string
+	Host          string
+	Key           string
+	Cert          string
+	HttpPort      int
+	HttpsPort     int
+	LoginTemplate string
 }
 
 type Info struct {
@@ -27,7 +27,7 @@ type Info struct {
 }
 
 const (
-    LOGIN_URL = "/login/"
+	LOGIN_URL = "/login/"
 )
 
 func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
@@ -49,20 +49,20 @@ func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginGetHandler(w http.ResponseWriter, r *http.Request) {
-    mylogger.Println("login GET attempt")
+	mylogger.Println("login GET attempt")
 	setHeader(w)
 	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: false})
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
-    mylogger.Println("login POST attempt")
+	mylogger.Println("login POST attempt")
 	// TODO: should we throttle this a bit to simulate DB call?
 	setHeader(w)
 	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: true})
 }
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
-    mylogger.Println("login misc attempt")
+	mylogger.Println("login misc attempt")
 	setHeader(w)
 	http.Redirect(w, r, LOGIN_URL, 302)
 }
@@ -84,17 +84,17 @@ var config Config
 var mylogger *log.Logger
 
 func main() {
-    mylogger = logger.NewLogger("", 0)
+	mylogger = logger.NewLogger("", 0)
 
 	configPath := flag.String("config", "", "path to config file")
 	flag.Parse()
 
-    if _, err := toml.DecodeFile(*configPath, &config); err != nil {
-        mylogger.Fatal(err)
-    }
+	if _, err := toml.DecodeFile(*configPath, &config); err != nil {
+		mylogger.Fatal(err)
+	}
 
-    s := strings.Split(config.LoginTemplate, "/")
-    loginTemplate = s[len(s)-1]
+	s := strings.Split(config.LoginTemplate, "/")
+	loginTemplate = s[len(s)-1]
 
 	http.HandleFunc("/login/", loginBaseHandler)
 	http.HandleFunc("/", redirectHandler)
@@ -111,7 +111,7 @@ func main() {
 	err := http.ListenAndServeTLS(config.Host+":"+strconv.Itoa(config.HttpsPort),
 		config.Cert,
 		config.Key,
-        nil)
+		nil)
 	if err != nil {
 		mylogger.Fatal("Https server error: " + err.Error())
 	}
