@@ -12,14 +12,3 @@ and it is not possible to actually login (or do anything).
 If a GET request is received, the standard login template is executed. If
 a POST request (login attempt) is received, the template is rendered with
 an extra "failure" string indicating a failed login.
-
-### Usage
-
-The ports, TLS certificate, and TLS private key file are specified in
-`webauth_config/json`. `webauth` takes a single argument, the path to the config
-file.
-
-```
-Usage of ./webauth:
-  -config=/path/to/config/file.json
-```
