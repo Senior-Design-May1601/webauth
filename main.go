@@ -10,6 +10,7 @@ import (
 	"time"
 
     "github.com/BurntSushi/toml"
+    "github.com/Senior-Design-May1601/projectmain/logger"
 )
 
 type Config struct {
@@ -48,17 +49,20 @@ func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginGetHandler(w http.ResponseWriter, r *http.Request) {
+    mylogger.Println("login GET attempt")
 	setHeader(w)
 	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: false})
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
+    mylogger.Println("login POST attempt")
 	// TODO: should we throttle this a bit to simulate DB call?
 	setHeader(w)
 	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: true})
 }
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
+    mylogger.Println("login misc attempt")
 	setHeader(w)
 	http.Redirect(w, r, LOGIN_URL, 302)
 }
@@ -77,13 +81,16 @@ func setHeader(w http.ResponseWriter) {
 var templates *template.Template
 var loginTemplate string
 var config Config
+var mylogger *log.Logger
 
 func main() {
+    mylogger = logger.NewLogger("", 0)
+
 	configPath := flag.String("config", "", "path to config file")
 	flag.Parse()
 
     if _, err := toml.DecodeFile(*configPath, &config); err != nil {
-        log.Fatal(err)
+        mylogger.Fatal(err)
     }
 
     s := strings.Split(config.LoginTemplate, "/")
@@ -97,7 +104,7 @@ func main() {
 	go func() {
 		err := http.ListenAndServe(config.Host+":"+strconv.Itoa(config.HttpPort), nil)
 		if err != nil {
-			log.Fatal("Http server error: " + err.Error())
+			mylogger.Fatal("Http server error: " + err.Error())
 		}
 	}()
 
@@ -106,6 +113,6 @@ func main() {
 		config.Key,
         nil)
 	if err != nil {
-		log.Fatal("Https server error: " + err.Error())
+		mylogger.Fatal("Https server error: " + err.Error())
 	}
 }
