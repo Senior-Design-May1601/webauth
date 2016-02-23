@@ -1,5 +1,5 @@
 {
-    "Root_dir": "/path/to/server/root",
+    "Root_dir": "./",
     "Certificate": "tls/dummy_cert.pem",
     "Key": "tls/dummy_key.pem",
     "Http_port": "8080",

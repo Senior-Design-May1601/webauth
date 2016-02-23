@@ -24,7 +24,7 @@ _testmain.go
 *.prof
 
 # ignore the binary
-webauth/webauth
+webauth
 
 # vim stuff
 [._]*.s[a-w][a-z]
