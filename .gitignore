@@ -33,3 +33,6 @@ webauth
 Session.vim
 .netrwhist
 *~
+
+# dev configuration
+dev-config.toml

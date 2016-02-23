@@ -1,20 +1,24 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
 	"html/template"
+    "log"
 	"net/http"
-	"os"
+    "strconv"
+    "strings"
 	"time"
+
+    "github.com/BurntSushi/toml"
 )
 
-type Configuration struct {
-	Root_dir    string
-	Certificate string
-	Key         string
-	Http_port   string
-	Https_port  string
+type Config struct {
+    Host            string
+	Key             string
+	Cert            string
+	HttpPort        int
+	HttpsPort       int
+    LoginTemplate   string
 }
 
 type Info struct {
@@ -22,12 +26,8 @@ type Info struct {
 }
 
 const (
-	TEMPLATE_PATH  = "/templates/"
-	LOGIN_TEMPLATE = "login.html"
-	LOGIN_URL      = "/login/"
+    LOGIN_URL = "/login/"
 )
-
-var templates *template.Template
 
 func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != LOGIN_URL {
@@ -49,13 +49,13 @@ func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 
 func loginGetHandler(w http.ResponseWriter, r *http.Request) {
 	setHeader(w)
-	templates.ExecuteTemplate(w, LOGIN_TEMPLATE, &Info{Failure: false})
+	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: false})
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: should we throttle this a bit to simulate DB call?
 	setHeader(w)
-	templates.ExecuteTemplate(w, LOGIN_TEMPLATE, &Info{Failure: true})
+	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: true})
 }
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
@@ -74,40 +74,38 @@ func setHeader(w http.ResponseWriter) {
 	w.Header().Set("X-Powered-By", "PHP/5.4.41")
 }
 
-func read_config(path string) Configuration {
-	file, _ := os.Open(path)
-	decoder := json.NewDecoder(file)
-	config := Configuration{}
-	err := decoder.Decode(&config)
-	if err != nil {
-		panic("Configuration error: " + err.Error())
-	}
-
-	return config
-}
+var templates *template.Template
+var loginTemplate string
+var config Config
 
 func main() {
-	config_path := flag.String("config", "", "path to config file")
+	configPath := flag.String("config", "", "path to config file")
 	flag.Parse()
-	config := read_config(*config_path)
 
-	http.HandleFunc(LOGIN_URL, loginBaseHandler)
+    if _, err := toml.DecodeFile(*configPath, &config); err != nil {
+        log.Fatal(err)
+    }
+
+    s := strings.Split(config.LoginTemplate, "/")
+    loginTemplate = s[len(s)-1]
+
+	http.HandleFunc("/login/", loginBaseHandler)
 	http.HandleFunc("/", redirectHandler)
 
-	templates = template.Must(template.ParseFiles(config.Root_dir + TEMPLATE_PATH +
-		LOGIN_TEMPLATE))
+	templates = template.Must(template.ParseFiles(config.LoginTemplate))
 
 	go func() {
-		err := http.ListenAndServe(":"+config.Http_port, nil)
+		err := http.ListenAndServe(config.Host+":"+strconv.Itoa(config.HttpPort), nil)
 		if err != nil {
-			panic("HTTP server error: " + err.Error())
+			log.Fatal("Http server error: " + err.Error())
 		}
 	}()
 
-	err := http.ListenAndServeTLS(":"+config.Https_port,
-		config.Root_dir+config.Certificate,
-		config.Root_dir+config.Key, nil)
+	err := http.ListenAndServeTLS(config.Host+":"+strconv.Itoa(config.HttpsPort),
+		config.Cert,
+		config.Key,
+        nil)
 	if err != nil {
-		panic("HTTPS server error: " + err.Error())
+		log.Fatal("Https server error: " + err.Error())
 	}
 }

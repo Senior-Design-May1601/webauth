@@ -1,0 +1,6 @@
+Host = "localhost"
+Cert = "tls/dummy_cert.pem"
+Key = "tls/dummy_key.pem"
+HTTPPort = 8080
+HTTPSPort = 8443
+LoginTemplate = "/home/nskinkel/src/go/src/github.com/Senior-Design-May1601/webauth/templates/login.html"
