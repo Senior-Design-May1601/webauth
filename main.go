@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/BurntSushi/toml"
+	"github.com/Senior-Design-May1601/Splunk/alert"
 	"github.com/Senior-Design-May1601/projectmain/logger"
 )
 
@@ -30,7 +31,30 @@ const (
 	LOGIN_URL = "/login/"
 )
 
+func makeAlert(r *http.Request) string {
+	meta := make(map[string]string)
+
+	meta["service"] = "web"
+	meta["remote"] = r.RemoteAddr
+	meta["local"] = r.Host
+	meta["url"] = r.URL.String()
+	meta["user-agent"] = r.Header.Get("User-Agent")
+	meta["cookie"] = r.Header.Get("Cookie")
+	meta["referer"] = r.Header.Get("Referer")
+	meta["method"] = r.Method
+
+	err := r.ParseForm()
+	if err == nil {
+		meta["username"] = r.Form.Get("username")
+		meta["password"] = r.Form.Get("password")
+	}
+
+	return alert.NewSplunkAlertMessage(meta)
+}
+
 func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
+	mylogger.Println(makeAlert(r))
+
 	if r.URL.Path != LOGIN_URL {
 		redirectHandler(w, r)
 		return
@@ -49,20 +73,17 @@ func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func loginGetHandler(w http.ResponseWriter, r *http.Request) {
-	mylogger.Println("login GET attempt")
 	setHeader(w)
 	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: false})
 }
 
 func loginPostHandler(w http.ResponseWriter, r *http.Request) {
-	mylogger.Println("login POST attempt")
 	// TODO: should we throttle this a bit to simulate DB call?
 	setHeader(w)
 	templates.ExecuteTemplate(w, loginTemplate, &Info{Failure: true})
 }
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
-	mylogger.Println("login misc attempt")
 	setHeader(w)
 	http.Redirect(w, r, LOGIN_URL, 302)
 }
