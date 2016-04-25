@@ -42,7 +42,6 @@ func makeAlert(r *http.Request) string {
 	meta["cookie"] = r.Header.Get("Cookie")
 	meta["referer"] = r.Header.Get("Referer")
 	meta["method"] = r.Method
-
 	err := r.ParseForm()
 	if err == nil {
 		meta["username"] = r.Form.Get("username")
@@ -54,7 +53,6 @@ func makeAlert(r *http.Request) string {
 
 func loginBaseHandler(w http.ResponseWriter, r *http.Request) {
 	mylogger.Println(makeAlert(r))
-
 	if r.URL.Path != LOGIN_URL {
 		redirectHandler(w, r)
 		return
@@ -85,6 +83,7 @@ func loginPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func redirectHandler(w http.ResponseWriter, r *http.Request) {
 	setHeader(w)
+	mylogger.Println(makeAlert(r))
 	http.Redirect(w, r, LOGIN_URL, 302)
 }
 
